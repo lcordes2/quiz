@@ -1,3 +1,4 @@
-pandas
 altair
+numpy
 openpyxl
+pandas
