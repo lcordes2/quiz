@@ -6,7 +6,7 @@ actually_tab, teams_tab = st.tabs(["Team Statistics", "Team Comparisons"])
 
 ### Only AIFP stats ###
 with actually_tab:
-    st.write("Within team stats")
+    st.write("Within team stats TEST")
 
 
 
