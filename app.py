@@ -48,7 +48,7 @@ with actually_tab:
     if actually_df.shape[0] > 0: # Only show plots if filter includes at least one game
 
         n_games, first_date, last_date = da.get_games_range(actually_df)
-        st.write(f"Based on {n_games} games from {first_date} to {last_date}")
+        st.write(f"Based on {n_games} game{'' if n_games == 1 else 's'} from {first_date} to {last_date}")
 
         col1, _, col2 = st.columns([10, 1, 10])
 
