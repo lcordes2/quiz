@@ -16,7 +16,8 @@ def load_data():
 
     actually_df = add_weekday_col(actually_df)
     teams_df = add_weekday_col(teams_df)
-    return actually_df, teams_df
+    players = list(get_games_per_player(actually_df)["Players"])
+    return actually_df, teams_df, players
 
 
 def add_weekday_col(df):
@@ -42,3 +43,15 @@ def get_average_per_round(df):
     round_means = round_cols.mean(axis=0)   
     rounds = [int(r.replace("Score_R", "")) for r in round_means.keys()]
     return pd.DataFrame({"Rounds": rounds, "Average score": np.round(round_means.values, 2)})   
+
+def apply_filter(df, date_range, player):
+    # Date filter
+    earliest = pd.to_datetime(min(date_range), format='%Y/%m/%d')
+    latest = pd.to_datetime(max(date_range), format='%Y/%m/%d')
+    filtered = df.loc[(df['Date'] >= earliest)
+                     & (df['Date'] <= latest)]
+    
+    # Player filter
+    if not player == "All":
+        filtered = filtered[filtered.isin([player]).any(axis=1)]
+    return filtered
