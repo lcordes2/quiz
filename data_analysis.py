@@ -35,8 +35,8 @@ def get_games_per_player(df):
     del game_counts[np.nan]
     return pd.DataFrame({"Players": game_counts.keys(), "Games played": game_counts.values()})
 
-
-# actually_df["Points"].plot.density()
-# actually_df.plot.line(x="Date", y="Points")
-# print(actually_df[actually_df["Weekday"]=="Wednesday"]["Points"].mean())
-# print(actually_df[actually_df["Weekday"]=="Sunday"]["Points"].mean())
+def get_average_per_round(df):  
+    round_cols = df.filter(regex="^Score_R\d$")
+    round_means = round_cols.mean(axis=0)   
+    rounds = [int(r.replace("Score_R", "")) for r in round_means.keys()]
+    return pd.DataFrame({"Rounds": rounds, "Average score": np.round(round_means.values, 2)})   
