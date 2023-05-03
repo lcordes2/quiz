@@ -2,37 +2,52 @@ import streamlit as st
 import data_analysis as da
 import altair as alt
 
+st.elements.utils._shown_default_value_warning = True
 
+# Setup tabs and load data
 actually_tab, teams_tab = st.tabs(["Team Statistics", "Team Comparisons"])
 actually_full_df, teams_full_df, players = da.load_data()
 
+# Set filter defaults
+date_min, date_max = actually_full_df["Date"].min(), actually_full_df["Date"].max()
+
+if "player_select" not in st.session_state:
+        st.session_state["player_select"] = "All"
+        st.session_state["date_min"] = date_min
+        st.session_state["date_max"] = date_max
 
 
 ### Filter sidebar ###
 
 with st.sidebar:
     st.title("Filters")
-    date_min, date_max = actually_full_df["Date"].min(), actually_full_df["Date"].max()
 
-    # if st.button("Clear all filters"):
-    #     pass
-        
+    if st.button("Clear all filters"):
+        st.session_state["player_select"] = "All"
+        st.session_state["date_min"] = date_min
+        st.session_state["date_max"] = date_max
+
 
     st.header("Date")
     earliest_date = st.date_input(
         "Include games starting from",
         min_value= date_min,
         max_value=date_max,
-        value=(date_min) 
+        value=st.session_state["date_min"],
+        key="date_min"
     )
     latest_date = st.date_input(
         "Include games until",
         min_value= date_min,
         max_value=date_max,
-        value=(date_max) 
+        value=st.session_state["date_max"],
+        key="date_max"
     )
 
-    filter_player = st.selectbox("Only include games featuring", options=["All"] + players)
+    filter_player = st.selectbox("Only include games featuring", options=["All"] + players, key="player_select")
+
+
+    
 
 
     actually_df = da.apply_filter(
