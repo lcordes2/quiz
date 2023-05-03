@@ -1,12 +1,14 @@
 import pandas as pd
 import numpy as np
 from collections import Counter
+import streamlit as st
 
 SHEET_ID = "13Vj450UMswqv0ycWIg3ZMTW42QNdYNDJpkAEKTvrh5Y"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=xlsx"
 
 
 
+@st.cache_data
 def load_data():
     sheets = pd.ExcelFile(URL)
     teams_df = pd.read_excel(sheets, sheet_name="dsFact_Scores")
@@ -32,8 +34,8 @@ def get_games_range(df):
 def get_games_per_player(df):
     player_cols = df.filter(regex="^Player\d$")
     game_counts = Counter(player_cols.values.flatten().tolist())
-    del game_counts[np.nan]
-    return pd.DataFrame({"Players": game_counts.keys(), "Games played": game_counts.values()})
+    game_counts_cleaned = {key: game_counts[key] for key in game_counts if isinstance(key, str)} # remove nans
+    return pd.DataFrame({"Players": game_counts_cleaned.keys(), "Games played": game_counts_cleaned.values()})
 
 def get_average_per_round(df):  
     round_cols = df.filter(regex="^Score_R\d$")
