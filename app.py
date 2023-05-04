@@ -1,6 +1,7 @@
 import streamlit as st
 import data_analysis as da
 import altair as alt
+import utilities
 
 st.elements.utils._shown_default_value_warning = True
 
@@ -8,62 +9,49 @@ st.elements.utils._shown_default_value_warning = True
 actually_tab, teams_tab = st.tabs(["Team Statistics", "Team Comparisons"])
 actually_full_df, teams_full_df, players = da.load_data()
 
-# Set filter defaults
-date_min, date_max = actually_full_df["Date"].min(), actually_full_df["Date"].max()
+### Actually stats ###
+with actually_tab:
+    st.title("Actually in First Place Statistics 2023")
 
-if "player_select" not in st.session_state:
-        st.session_state["player_select"] = "All"
-        st.session_state["date_min"] = date_min
-        st.session_state["date_max"] = date_max
-
-
-### Filter sidebar ###
-
-with st.sidebar:
-    st.title("Filters")
-
-    if st.button("Clear all filters"):
-        st.session_state["player_select"] = "All"
-        st.session_state["date_min"] = date_min
-        st.session_state["date_max"] = date_max
-
-
-    st.header("Date")
-    earliest_date = st.date_input(
-        "Include games starting from",
-        min_value= date_min,
-        max_value=date_max,
-        value=st.session_state["date_min"],
-        key="date_min"
-    )
-    latest_date = st.date_input(
-        "Include games until",
-        min_value= date_min,
-        max_value=date_max,
-        value=st.session_state["date_max"],
-        key="date_max"
+    ## Filters ##
+    # Set filter defaults
+    if "player_select" not in st.session_state or "date_range" not in st.session_state:
+        st.session_state["player_select"] = "All Players"
+        st.session_state["date_range"] = (
+        actually_full_df["Date"].min().strftime("%d/%m/%y"),
+        actually_full_df["Date"].max().strftime("%d/%m/%y")
     )
 
-    filter_player = st.selectbox("Only include games featuring", options=["All"] + players, key="player_select")
-
-
-    
-
+    earliest_date, latest_date = st.select_slider(
+        label="Include games between",
+        value=st.session_state["date_range"],
+        options=actually_full_df["Date"].dt.strftime("%d/%m/%y"),
+        key="date_range"
+    )  
+    filter_player = st.selectbox("Only include games featuring", options=["All Players"] + players, key="player_select")
 
     actually_df = da.apply_filter(
         actually_full_df, 
-        date_range=[earliest_date, latest_date],
+        earliest=earliest_date, 
+        latest=latest_date,
         player=filter_player,
     )
+    n_games = actually_df.shape[0]
 
 
-### Only AIFP stats ###
-with actually_tab:
-    st.title("Actually in First Place Statistics 2023")
-    if actually_df.shape[0] > 0: # Only show plots if filter includes at least one game
+    utilities.empty_space()
 
-        n_games, first_date, last_date = da.get_games_range(actually_df)
-        st.write(f"Based on {n_games} game{'' if n_games == 1 else 's'} from {first_date} to {last_date}")
+    left, right = st.columns([4, 1])
+    with left:
+        st.write(f"{n_games} game{'' if n_games == 1 else 's'} included")
+    with right:
+        st.button("Clear filters", on_click=utilities.update_filter, kwargs={"df": actually_full_df})
+
+
+    utilities.empty_space()
+
+    ## Plots ##
+    if n_games > 0: # Only show plots if filter includes at least one game
 
         col1, _, col2 = st.columns([10, 1, 10])
 
@@ -117,9 +105,6 @@ with actually_tab:
             )
             st.altair_chart(density_chart, use_container_width=True)
     
-    else:
-        st.write("No games found for the current filter")
-
 ### Stats with other teams ###
 with teams_tab:
     st.header("Coming soon")

@@ -26,12 +26,6 @@ def add_weekday_col(df):
     return df
 
 
-def get_games_range(df):
-    return (len(df["Date"]),
-        df["Date"].min().strftime('%d/%m/%Y'),
-        df["Date"].max().strftime('%d/%m/%Y')
-    )
-
 def get_games_per_player(df):
     player_cols = df.filter(regex="^Player\d$")
     game_counts = Counter(player_cols.values.flatten().tolist())
@@ -44,14 +38,14 @@ def get_average_per_round(df):
     rounds = [int(r.replace("Score_R", "")) for r in round_means.keys()]
     return pd.DataFrame({"Rounds": rounds, "Average score": np.round(round_means.values, 2)})   
 
-def apply_filter(df, date_range, player):
+def apply_filter(df, earliest, latest, player):
     # Date filter
-    earliest = pd.to_datetime(min(date_range), format='%Y/%m/%d')
-    latest = pd.to_datetime(max(date_range), format='%Y/%m/%d')
+    earliest = pd.to_datetime(earliest, format="%d/%m/%y")
+    latest = pd.to_datetime(latest, format="%d/%m/%y")
     filtered = df.loc[(df['Date'] >= earliest)
                      & (df['Date'] <= latest)]
     
     # Player filter
-    if not player == "All":
+    if not player == "All Players":
         filtered = filtered[filtered.isin([player]).any(axis=1)]
     return filtered
