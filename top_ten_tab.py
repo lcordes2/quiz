@@ -41,10 +41,10 @@ def top_ten_tab(top_ten_df):
         rank_counts = da.get_rank_distribution(select_df)
         title = alt.TitleParams("Number of times each top ten position was achieved", anchor="middle")        # y_min = round_dat["Average score"].min() - 0.5
         rank_chart = alt.Chart(rank_counts, title=title).mark_bar().encode(
-            alt.X('Rank:O', axis=alt.Axis(labels=False, title='Top ten position', labelAngle=0)),
+            alt.X('Rank:O', axis=alt.Axis(labels=True, title='Top ten position', labelAngle=0)),
             alt.Y('Count:Q', axis=alt.Axis(tickMinStep=1)),
             color="Team Name:N",
-            column= "Team Name:N"
+            column= alt.Column("Team Name:N", title=None)
         ).configure_legend(
         title=None,
         orient='bottom',
