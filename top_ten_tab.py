@@ -6,8 +6,18 @@ import utilities
 
 def top_ten_tab(top_ten_df):
 
+#     hide_table_row_index = """
+#         <style>
+#         thead tr th:first-child {display:none}
+#         tbody th {display:none}
+#         </style>
+#     """
+
+# # Inject CSS with Markdown
+#     st.markdown(hide_table_row_index, unsafe_allow_html=True)
+    
     summary_df, team_names = da.get_top_ten_summary(top_ten_df)
-    st.write(summary_df)
+    st.dataframe(summary_df)
  
     utilities.empty_space()
     st.header("Team comparisons")
@@ -27,7 +37,11 @@ def top_ten_tab(top_ten_df):
             alt.X('Date:T'),
             alt.Y('Points:Q', scale=alt.Scale(domain=[y_min, y_max]), title="Score"),
             color='Team Name:N'
+        ).configure_legend(
+            title=None,
+            orient='bottom',
         )
+
         st.altair_chart(date_chart, use_container_width=True)
 
         utilities.empty_space()
@@ -36,7 +50,6 @@ def top_ten_tab(top_ten_df):
         # Bar plot: Ranks 
         rank_counts = da.get_rank_distribution(select_df)
         title = alt.TitleParams("Number of times each top ten position was achieved", anchor="middle")        # y_min = round_dat["Average score"].min() - 0.5
-        print(rank_counts)
         rank_chart = alt.Chart(rank_counts, title=title).mark_bar().encode(
             alt.X('Rank:O', axis=alt.Axis(labels=True, title='Top ten position', labelAngle=0)),
             alt.Y('Count:Q', axis=alt.Axis(tickMinStep=1)),
@@ -44,6 +57,7 @@ def top_ten_tab(top_ten_df):
             column= "Team Name:N"
         ).configure_legend(
         title=None,
+        orient='bottom',
         )
 
         st.altair_chart(rank_chart)
