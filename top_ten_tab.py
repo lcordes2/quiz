@@ -44,7 +44,7 @@ def top_ten_tab(top_ten_df):
             alt.X('Rank:O', axis=alt.Axis(labels=True, title='Top ten position', labelAngle=0)),
             alt.Y('Count:Q', axis=alt.Axis(tickMinStep=1)),
             color="Team Name:N",
-            column= alt.Column("Team Name:N", title=None)
+            column= alt.Column("Team Name:N", title=None, header=None)
         ).configure_legend(
         title=None,
         orient='bottom',
