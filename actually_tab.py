@@ -52,7 +52,7 @@ def actually_tab(actually_full_df, players):
             y_min = actually_df["Points"].min() - 5
             y_max = actually_df["Points"].max() + 5
             date_chart =alt.Chart(actually_df, title=title).mark_line(clip=True, point=True).encode(
-                alt.X('Date:T'),
+                alt.X('Date:T', axis=alt.Axis(title=None)),
                 alt.Y('Points:Q', scale=alt.Scale(domain=[y_min, y_max]), title="Score")
             )
             st.altair_chart(date_chart, use_container_width=True)

@@ -24,7 +24,7 @@ def top_ten_tab(top_ten_df):
         y_min = select_df["Points"].min() - 5
         y_max = select_df["Points"].max() + 5
         date_chart =alt.Chart(select_df, title=title).mark_line(clip=True, point=True).encode(
-            alt.X('Date:T'),
+            alt.X('Date:T', axis=alt.Axis(title=None)),
             alt.Y('Points:Q', scale=alt.Scale(domain=[y_min, y_max]), title="Score"),
             color='Team Name:N'
         ).configure_legend(
@@ -41,7 +41,7 @@ def top_ten_tab(top_ten_df):
         rank_counts = da.get_rank_distribution(select_df)
         title = alt.TitleParams("Number of times each top ten position was achieved", anchor="middle")        # y_min = round_dat["Average score"].min() - 0.5
         rank_chart = alt.Chart(rank_counts, title=title).mark_bar().encode(
-            alt.X('Rank:O', axis=alt.Axis(labels=True, title='Top ten position', labelAngle=0)),
+            alt.X('Rank:O', axis=alt.Axis(labels=False, title='Top ten position', labelAngle=0)),
             alt.Y('Count:Q', axis=alt.Axis(tickMinStep=1)),
             color="Team Name:N",
             column= "Team Name:N"
