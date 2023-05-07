@@ -71,7 +71,8 @@ def get_top_ten_summary(df):
             "Average rank": mean_rank,
             "Games played": n_games,
         }
-    ).reset_index(drop=True)
+    ).sort_values("Total score", ascending=False)
+    summary_df.index = range(1, 11)
 
     return summary_df.sort_values("Total score", ascending=False), team_names
 
