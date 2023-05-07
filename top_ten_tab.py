@@ -5,17 +5,7 @@ import altair as alt
 import utilities
 
 def top_ten_tab(top_ten_df):
-
-#     hide_table_row_index = """
-#         <style>
-#         thead tr th:first-child {display:none}
-#         tbody th {display:none}
-#         </style>
-#     """
-
-# # Inject CSS with Markdown
-#     st.markdown(hide_table_row_index, unsafe_allow_html=True)
-    
+   
     summary_df, team_names = da.get_top_ten_summary(top_ten_df)
     st.dataframe(summary_df)
  

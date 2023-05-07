@@ -60,17 +60,19 @@ def get_top_ten_summary(df):
     total_score = df.groupby("Team Name")["Points"].sum()
     high_score = df.groupby("Team Name")["Points"].max()
     mean_rank = df.groupby("Team Name")["Rank"].mean().round()
-    n_games = df[   "Team Name"].value_counts()
+    n_games = df["Team Name"].value_counts()
 
     summary_df = pd.DataFrame(index=team_names, 
         data={
+            "Team name": team_names,
             "Total score": total_score,
             "Average score": mean_score,
-            "High Score": high_score,
-            "Average Rank": mean_rank,
+            "High score": high_score,
+            "Average rank": mean_rank,
             "Games played": n_games,
         }
-    )
+    ).reset_index(drop=True)
+
     return summary_df.sort_values("Total score", ascending=False), team_names
 
 def get_rank_distribution(df):
