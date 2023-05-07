@@ -8,7 +8,7 @@ URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=xlsx"
 
 
 
-@st.cache_data(ttl=3600) # Data is only cached for max of 1 hour, to receive new entries
+@st.cache_data(ttl=1800) # Data is only cached for max of 30 min, to receive new entries
 def load_data():
     sheets = pd.ExcelFile(URL)
     teams_df = pd.read_excel(sheets, sheet_name="dsFact_Scores")
@@ -51,3 +51,34 @@ def apply_filter(df, earliest, latest, player):
     if not player == "All Players":
         filtered = filtered[filtered.isin([player]).any(axis=1)]
     return filtered
+
+
+def get_top_ten_summary(df):
+    st.title("Top Ten Teams Statistics 2023")
+    team_names = df["Team Name"].unique()
+    mean_score = df.groupby("Team Name")["Points"].mean().round(2)
+    total_score = df.groupby("Team Name")["Points"].sum()
+    high_score = df.groupby("Team Name")["Points"].max()
+    mean_rank = df.groupby("Team Name")["Rank"].mean().round()
+    n_games = df[   "Team Name"].value_counts()
+
+    summary_df = pd.DataFrame(index=team_names, 
+        data={
+            "Total score": total_score,
+            "Average score": mean_score,
+            "High Score": high_score,
+            "Average Rank": mean_rank,
+            "Games played": n_games,
+        }
+    )
+    return summary_df.sort_values("Total score", ascending=False), team_names
+
+def get_rank_distribution(df):
+    df = df.loc[df["Rank"].isin(range(1, 11))]
+    counts = df.groupby("Team Name")["Rank"].value_counts()
+    rank_counts = pd.DataFrame({
+        "Team Name": counts.index.get_level_values(0),
+        "Rank": counts.index.get_level_values(1),
+        "Count": list(counts)
+    })
+    return rank_counts

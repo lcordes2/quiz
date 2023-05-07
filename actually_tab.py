@@ -63,7 +63,7 @@ def actually_tab(actually_full_df, players):
             y_min = round_dat["Average score"].min() - 0.5
             y_max = round_dat["Average score"].max() + 0.5
             round_chart = alt.Chart(round_dat, title=title).mark_bar(clip=True).encode(
-                alt.X('Rounds:N'),
+                alt.X('Rounds:N', axis=alt.Axis(labelAngle=0)),
                 alt.Y('Average score:Q', scale=alt.Scale(domain=[y_min, y_max]))
             )
             st.altair_chart(round_chart, use_container_width=True)
